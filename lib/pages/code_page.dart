@@ -1,13 +1,14 @@
-import 'package:email_validator/email_validator.dart';
+import 'package:email_otp/email_otp.dart';
 import 'package:flutter/material.dart';
 import 'package:logintest/component/one_button.dart';
 import 'package:logintest/component/one_textfield.dart';
+import 'package:logintest/pages/id_page.dart';
 
 const Color backColor = Color.fromARGB(255, 233, 233, 233);
 
 class CodePage extends StatefulWidget {
-  const CodePage({super.key});
-
+  CodePage({super.key, required this.myAuth});
+  EmailOTP myAuth = EmailOTP();
   @override
   State<CodePage> createState() => _EmailPageState();
 }
@@ -30,16 +31,21 @@ class _EmailPageState extends State<CodePage> {
         child: Center(
           child: SingleChildScrollView(
             child: Column(children: [
-              const Padding(
-                padding: EdgeInsets.only(left: 20, top: 20),
+              Padding(
+                padding: const EdgeInsets.only(left: 20, top: 20),
                 child: Row(
                   children: [
-                    Text(
+                    const Text(
                       "Login",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
-                    Icon(Icons.person),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Image.asset(
+                      "assets/images/User.png",
+                    ),
                   ],
                 ),
               ),
@@ -85,9 +91,8 @@ class _EmailPageState extends State<CodePage> {
                   controller: codeController,
                   hintText: "Enter Code",
                   obscureText: false,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (code) =>
-                      code != null && !EmailValidator.validate(code)
+                  validator: (codeController) =>
+                      widget.myAuth.verifyOTP(otp: codeController) == true
                           ? 'Enter a valid code'
                           : null,
                 ),
@@ -97,12 +102,22 @@ class _EmailPageState extends State<CodePage> {
               ),
 
               OneButton(
-                  text: "Authorization",
-                  onClicked: () {
-                    if (formKey.currentState!.validate()) {
-                      Navigator.pushNamed(context, '/codepage');
-                    }
-                  }),
+                text: "Verify",
+                onTap: () async {
+                  if (await widget.myAuth.verifyOTP(otp: codeController.text) ==
+                      true) {
+                    String? id = 'bib';
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => IdPage(id: id)));
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text("Invalid OTP"),
+                    ));
+                  }
+                },
+              ),
             ]),
           ),
         ),

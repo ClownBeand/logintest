@@ -3,6 +3,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:logintest/component/one_button.dart';
 import 'package:logintest/component/one_textfield.dart';
+import 'package:logintest/pages/code_page.dart';
 import '../component/squire_tile.dart';
 
 const Color backColor = Color.fromARGB(255, 233, 233, 233);
@@ -15,9 +16,9 @@ class EmailPage extends StatefulWidget {
 }
 
 class _EmailPageState extends State<EmailPage> {
-  EmailOTP myAuth = EmailOTP();
   final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
+  EmailOTP myAuth = EmailOTP();
 
   @override
   void dispose() {
@@ -33,16 +34,21 @@ class _EmailPageState extends State<EmailPage> {
         child: Center(
           child: SingleChildScrollView(
             child: Column(children: [
-              const Padding(
-                padding: EdgeInsets.only(left: 20, top: 20),
+              Padding(
+                padding: const EdgeInsets.only(left: 20, top: 20),
                 child: Row(
                   children: [
-                    Text(
+                    const Text(
                       "Login",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
-                    Icon(Icons.person),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Image.asset(
+                      "assets/images/User.png",
+                    ),
                   ],
                 ),
               ),
@@ -100,12 +106,26 @@ class _EmailPageState extends State<EmailPage> {
               ),
 
               OneButton(
-                  text: "Sign in",
-                  onClicked: () {
-                    if (formKey.currentState!.validate()) {
-                      Navigator.pushNamed(context, '/codepage');
-                    }
-                  }),
+                text: "Sign in",
+                onTap: () async {
+                  // if (formKey.currentState!.validate()) {
+                  //   Navigator.pushNamed(context, '/codepage');
+                  // }
+                  myAuth.setConfig(
+                    appEmail: "me@rohitchouhan.com",
+                    appName: "Email OTP",
+                    userEmail: emailController.text,
+                    otpLength: 6,
+                    otpType: OTPType.digitsOnly,
+                  );
+                  if (await myAuth.sendOTP() == true) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CodePage(myAuth: myAuth)));
+                  }
+                },
+              ),
               const SizedBox(
                 height: 40,
               ),

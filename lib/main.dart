@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:logintest/pages/code_page.dart';
 import 'package:logintest/pages/email_page.dart';
+import 'pages/id_page.dart';
 
 void main() => runApp(const MainApp());
 
@@ -14,7 +14,9 @@ class MainApp extends StatelessWidget {
       home: const EmailPage(),
       routes: {
         '/EmailPage': (context) => const EmailPage(),
-        '/codepage': (context) => const CodePage(),
+        '/idpage': (context) => const IdPage(
+              id: '',
+            ),
       },
     );
   }
